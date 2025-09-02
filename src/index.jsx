@@ -3,9 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken, signInAnonymously } from 'firebase/auth';
 import { getFirestore, collection, query, onSnapshot, doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { useMediaQuery } from 'react-responsive';
 import { Home, Search, Heart, User, Plus } from 'lucide-react';
-import { Dna } from 'react-loader-spinner';
 
 // Firebase Configuration & Initialization
 // IMPORTANT: These variables are provided by the hosting environment.
@@ -31,9 +29,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const [vendors, setVendors] = useState([]);
-  const [userId, setUserId] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
-  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => {
     const setupFirebaseAndAuth = async () => {
@@ -44,11 +40,9 @@ const App = () => {
           await signInAnonymously(auth);
         }
         setIsAuthReady(true);
-        setUserId(auth.currentUser?.uid || 'anonymous');
       } catch (e) {
         console.error("Firebase Auth Error:", e);
         setIsAuthReady(true);
-        setUserId('anonymous');
       }
     };
     setupFirebaseAndAuth();
@@ -84,32 +78,7 @@ const App = () => {
     });
 
     return () => unsubscribe();
-  }, [isAuthReady, db, appId]);
-
-
-  const saveVendor = async () => {
-    if (!userId || !isAuthReady) {
-      console.error("User not authenticated or auth not ready.");
-      return;
-    }
-    const newVendor = {
-      name: 'Tukang AC Budi',
-      service: 'Teknisi',
-      location: 'Depok',
-      rating: 4.8,
-      reviewCount: 95,
-      imageUrl: 'gs://your-firebase-project.appspot.com/profiles/budi.jpg', // Placeholder for storage
-      description: 'Layanan service AC profesional dan terpercaya. Pemasangan, perbaikan, dan perawatan.'
-    };
-    const vendorDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'vendors', 'budi-ac');
-    try {
-      await setDoc(vendorDocRef, newVendor);
-      console.log('Vendor added successfully!');
-    } catch (e) {
-      console.error('Error adding vendor:', e);
-    }
-  };
-
+  }, [isAuthReady, db, appId, storage]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -156,7 +125,7 @@ const App = () => {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Vendor Pilihan</h2>
                 {loading ? (
                   <div className="flex justify-center items-center h-48">
-                    <Dna visible={true} height="80" width="80" ariaLabel="dna-loading" wrapperStyle={{}} wrapperClass="dna-wrapper" />
+                    <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-blue-500"></div>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

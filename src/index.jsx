@@ -128,21 +128,29 @@ const App = () => {
                     <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-blue-500"></div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {vendors.map((vendor, index) => (
-                      <div key={index} className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
-                        <img src={vendor.profilePic} alt={vendor.name} className="w-16 h-16 rounded-full object-cover mr-4" />
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{vendor.name}</h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{vendor.service}</p>
-                          <div className="flex items-center text-yellow-400 text-sm mt-1">
-                            <span>⭐ {vendor.rating}</span>
-                            <span className="text-gray-500 text-xs ml-2">({vendor.reviewCount} ulasan)</span>
+                  vendors.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {vendors.map((vendor, index) => (
+                        <div key={index} className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                          <img src={vendor.profilePic} alt={vendor.name} className="w-16 h-16 rounded-full object-cover mr-4" />
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{vendor.name}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{vendor.service}</p>
+                            <div className="flex items-center text-yellow-400 text-sm mt-1">
+                              <span>⭐ {vendor.rating}</span>
+                              <span className="text-gray-500 text-xs ml-2">({vendor.reviewCount} ulasan)</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+                      <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
+                        Belum ada vendor yang terdaftar. Anda bisa tambahkan vendor baru.
+                      </p>
+                    </div>
+                  )
                 )}
               </section>
             </main>

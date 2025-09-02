@@ -78,7 +78,7 @@ const App = () => {
     });
 
     return () => unsubscribe();
-  }, [isAuthReady, appId, db, storage]);
+  }, [isAuthReady]);
 
   const renderContent = () => {
     switch (activeTab) {

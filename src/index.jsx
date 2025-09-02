@@ -8,8 +8,6 @@ import { Home, Search, Heart, User, Plus } from 'lucide-react';
 
 // Firebase Configuration & Initialization
 // IMPORTANT: These variables are provided by the hosting environment.
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
 // Ensure Firebase is initialized only once
@@ -17,8 +15,9 @@ let app, auth;
 // The following variables are commented out because they are not used in the current version of the code (which uses dummy data).
 // let db, storage;
 try {
+  // The Firebase config is not used since we are currently working with dummy data.
   if (!app) {
-    app = initializeApp(firebaseConfig);
+    app = initializeApp({});
     auth = getAuth(app);
     // db = getFirestore(app);
     // storage = getStorage(app);

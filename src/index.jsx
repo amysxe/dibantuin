@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken, signInAnonymously } from 'firebase/auth';
-import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { Home, Search, Heart, User, Plus } from 'lucide-react';
 
 // Firebase Configuration & Initialization
-// IMPORTANT: These variables are provided by the hosting environment.
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
 // Ensure Firebase is initialized only once
-let app, auth, db, storage;
+let app, auth;
 try {
   if (!app) {
-    app = initializeApp(firebaseConfig);
+    app = initializeApp({});
     auth = getAuth(app);
-    db = getFirestore(app);
-    storage = getStorage(app);
   }
 } catch (e) {
   console.error("Firebase initialization failed:", e);
@@ -49,34 +42,20 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (!isAuthReady || !db || !storage) return;
+    if (!isAuthReady) return;
 
-    const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'vendors'));
-    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-      const vendorsList = [];
-      for (const docSnapshot of querySnapshot.docs) {
-        const vendor = { id: docSnapshot.id, ...docSnapshot.data() };
-        // Fetch image URL from Firestore Storage
-        if (vendor.imageUrl) {
-          try {
-            const imageRef = ref(storage, vendor.imageUrl);
-            vendor.profilePic = await getDownloadURL(imageRef);
-          } catch (error) {
-            console.error("Error fetching image URL:", error);
-            vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
-          }
-        } else {
-          vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
-        }
-        vendorsList.push(vendor);
-      }
-      setVendors(vendorsList);
+    // This section is using dummy data for debugging and visualization.
+    const dummyVendors = [
+      { id: '1', name: 'Budi', service: 'Tukang Kebun', rating: 4.8, reviewCount: 120, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=BUDI' },
+      { id: '2', name: 'Santi', service: 'House Cleaning', rating: 4.9, reviewCount: 250, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=SANTI' },
+      { id: '3', name: 'Joko', service: 'Tukang Listrik', rating: 4.5, reviewCount: 85, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=JOKO' },
+    ];
+    
+    // Simulating data loading delay
+    setTimeout(() => {
+      setVendors(dummyVendors);
       setLoading(false);
-    }, (error) => {
-      console.error("Firestore Error:", error);
-      setLoading(false);
-    });
-    return () => unsubscribe();
+    }, 1000);
   }, [isAuthReady]);
 
   const renderContent = () => {

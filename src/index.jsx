@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken, signInAnonymously } from 'firebase/auth';
-import { getFirestore, collection, query, onSnapshot, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { Home, Search, Heart, User, Plus } from 'lucide-react';
 
@@ -78,7 +78,7 @@ const App = () => {
     });
 
     return () => unsubscribe();
-  }, [isAuthReady, db, appId, storage]);
+  }, [isAuthReady]);
 
   const renderContent = () => {
     switch (activeTab) {

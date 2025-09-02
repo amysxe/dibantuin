@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken, signInAnonymously } from 'firebase/auth';
-import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+// The following imports are commented out because they are not used in the current version of the code (which uses dummy data).
+// import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
+// import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { Home, Search, Heart, User, Plus } from 'lucide-react';
 
 // Firebase Configuration & Initialization
@@ -12,13 +13,15 @@ const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__f
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
 // Ensure Firebase is initialized only once
-let app, auth, db, storage;
+let app, auth;
+// The following variables are commented out because they are not used in the current version of the code (which uses dummy data).
+// let db, storage;
 try {
   if (!app) {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
-    db = getFirestore(app);
-    storage = getStorage(app);
+    // db = getFirestore(app);
+    // storage = getStorage(app);
   }
 } catch (e) {
   console.error("Firebase initialization failed:", e);

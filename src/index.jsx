@@ -51,33 +51,46 @@ const App = () => {
   useEffect(() => {
     if (!isAuthReady) return;
 
-    const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'vendors'));
-    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-      const vendorsList = [];
-      for (const docSnapshot of querySnapshot.docs) {
-        const vendor = { id: docSnapshot.id, ...docSnapshot.data() };
-        // Fetch image URL from Firestore Storage
-        if (vendor.imageUrl) {
-          try {
-            const imageRef = ref(storage, vendor.imageUrl);
-            vendor.profilePic = await getDownloadURL(imageRef);
-          } catch (error) {
-            console.error("Error fetching image URL:", error);
-            vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
-          }
-        } else {
-          vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
-        }
-        vendorsList.push(vendor);
-      }
-      setVendors(vendorsList);
+    // This section is temporarily replaced with dummy data for debugging purposes.
+    // Uncomment the code below to switch back to real Firestore data.
+    const dummyVendors = [
+      { id: '1', name: 'Budi', service: 'Tukang Kebun', rating: 4.8, reviewCount: 120, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=BUDI' },
+      { id: '2', name: 'Santi', service: 'House Cleaning', rating: 4.9, reviewCount: 250, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=SANTI' },
+      { id: '3', name: 'Joko', service: 'Tukang Listrik', rating: 4.5, reviewCount: 85, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=JOKO' },
+    ];
+    // Simulating data loading delay
+    setTimeout(() => {
+      setVendors(dummyVendors);
       setLoading(false);
-    }, (error) => {
-      console.error("Firestore Error:", error);
-      setLoading(false);
-    });
+    }, 1000);
 
-    return () => unsubscribe();
+    // // ORIGINAL FIRESTORE CODE:
+    // const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'vendors'));
+    // const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+    //   const vendorsList = [];
+    //   for (const docSnapshot of querySnapshot.docs) {
+    //     const vendor = { id: docSnapshot.id, ...docSnapshot.data() };
+    //     // Fetch image URL from Firestore Storage
+    //     if (vendor.imageUrl) {
+    //       try {
+    //         const imageRef = ref(storage, vendor.imageUrl);
+    //         vendor.profilePic = await getDownloadURL(imageRef);
+    //       } catch (error) {
+    //         console.error("Error fetching image URL:", error);
+    //         vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
+    //       }
+    //     } else {
+    //       vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
+    //     }
+    //     vendorsList.push(vendor);
+    //   }
+    //   setVendors(vendorsList);
+    //   setLoading(false);
+    // }, (error) => {
+    //   console.error("Firestore Error:", error);
+    //   setLoading(false);
+    // });
+    // return () => unsubscribe();
   }, [isAuthReady]);
 
   const renderContent = () => {

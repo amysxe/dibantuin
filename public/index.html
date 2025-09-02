@@ -4,12 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dibantuin - Butuh sesuatu? Sini dibantuin</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#FFFFFF">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 </head>
 <body class="bg-gray-100 font-sans antialiased">
     <div id="root"></div>
 
-    <!-- The compiled React app will be injected here by the build process. -->
-    <!-- For example, if your React app is compiled to a single file, it would be included here. -->
-    <!-- <script src="/static/js/main.js"></script> -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered! Scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>

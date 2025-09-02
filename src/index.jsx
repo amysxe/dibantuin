@@ -60,6 +60,7 @@ const App = () => {
       { id: '2', name: 'Santi', service: 'House Cleaning', rating: 4.9, reviewCount: 250, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=SANTI' },
       { id: '3', name: 'Joko', service: 'Tukang Listrik', rating: 4.5, reviewCount: 85, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=JOKO' },
     ];
+    
     // Simulating data loading delay
     setTimeout(() => {
       setVendors(dummyVendors);
@@ -67,6 +68,7 @@ const App = () => {
     }, 1000);
 
     // // ORIGINAL FIRESTORE CODE:
+    // const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
     // const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'vendors'));
     // const unsubscribe = onSnapshot(q, async (querySnapshot) => {
     //   const vendorsList = [];

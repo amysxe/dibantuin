@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken, signInAnonymously } from 'firebase/auth';
-// The following imports are commented out because they are not used in the current version of the code (which uses dummy data).
-// import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
-// import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { Home, Search, Heart, User, Plus } from 'lucide-react';
 
 // Firebase Configuration & Initialization
 // IMPORTANT: These variables are provided by the hosting environment.
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
 // Ensure Firebase is initialized only once
-let app, auth;
-// The following variables are commented out because they are not used in the current version of the code (which uses dummy data).
-// let db, storage;
+let app, auth, db, storage;
 try {
-  // The Firebase config is not used since we are currently working with dummy data.
   if (!app) {
-    app = initializeApp({});
+    app = initializeApp(firebaseConfig);
     auth = getAuth(app);
-    // db = getFirestore(app);
-    // storage = getStorage(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
   }
 } catch (e) {
   console.error("Firebase initialization failed:", e);
@@ -51,50 +49,34 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (!isAuthReady) return;
+    if (!isAuthReady || !db || !storage) return;
 
-    // This section is temporarily replaced with dummy data for debugging purposes.
-    // Uncomment the code below to switch back to real Firestore data.
-    const dummyVendors = [
-      { id: '1', name: 'Budi', service: 'Tukang Kebun', rating: 4.8, reviewCount: 120, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=BUDI' },
-      { id: '2', name: 'Santi', service: 'House Cleaning', rating: 4.9, reviewCount: 250, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=SANTI' },
-      { id: '3', name: 'Joko', service: 'Tukang Listrik', rating: 4.5, reviewCount: 85, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=JOKO' },
-    ];
-    
-    // Simulating data loading delay
-    setTimeout(() => {
-      setVendors(dummyVendors);
+    const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'vendors'));
+    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+      const vendorsList = [];
+      for (const docSnapshot of querySnapshot.docs) {
+        const vendor = { id: docSnapshot.id, ...docSnapshot.data() };
+        // Fetch image URL from Firestore Storage
+        if (vendor.imageUrl) {
+          try {
+            const imageRef = ref(storage, vendor.imageUrl);
+            vendor.profilePic = await getDownloadURL(imageRef);
+          } catch (error) {
+            console.error("Error fetching image URL:", error);
+            vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
+          }
+        } else {
+          vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
+        }
+        vendorsList.push(vendor);
+      }
+      setVendors(vendorsList);
       setLoading(false);
-    }, 1000);
-
-    // // ORIGINAL FIRESTORE CODE:
-    // const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    // const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'vendors'));
-    // const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-    //   const vendorsList = [];
-    //   for (const docSnapshot of querySnapshot.docs) {
-    //     const vendor = { id: docSnapshot.id, ...docSnapshot.data() };
-    //     // Fetch image URL from Firestore Storage
-    //     if (vendor.imageUrl) {
-    //       try {
-    //         const imageRef = ref(storage, vendor.imageUrl);
-    //         vendor.profilePic = await getDownloadURL(imageRef);
-    //       } catch (error) {
-    //         console.error("Error fetching image URL:", error);
-    //         vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
-    //       }
-    //     } else {
-    //       vendor.profilePic = 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=PIC';
-    //     }
-    //     vendorsList.push(vendor);
-    //   }
-    //   setVendors(vendorsList);
-    //   setLoading(false);
-    // }, (error) => {
-    //   console.error("Firestore Error:", error);
-    //   setLoading(false);
-    // });
-    // return () => unsubscribe();
+    }, (error) => {
+      console.error("Firestore Error:", error);
+      setLoading(false);
+    });
+    return () => unsubscribe();
   }, [isAuthReady]);
 
   const renderContent = () => {
@@ -147,8 +129,8 @@ const App = () => {
                 ) : (
                   vendors.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {vendors.map((vendor, index) => (
-                        <div key={index} className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                      {vendors.map((vendor) => (
+                        <div key={vendor.id} className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
                           <img src={vendor.profilePic} alt={vendor.name} className="w-16 h-16 rounded-full object-cover mr-4" />
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{vendor.name}</h3>

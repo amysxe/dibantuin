@@ -1,62 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithCustomToken, signInAnonymously } from 'firebase/auth';
+import React, { useState } from 'react';
 import { Home, Search, Heart, User, Plus } from 'lucide-react';
 
-// Firebase Configuration & Initialization
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-// Ensure Firebase is initialized only once
-let app, auth;
-try {
-  if (!app) {
-    app = initializeApp({});
-    auth = getAuth(app);
-  }
-} catch (e) {
-  console.error("Firebase initialization failed:", e);
-}
-
-
 const App = () => {
-  const [loading, setLoading] = useState(true);
+  // Langsung inisialisasi state dengan data dummy.
+  const [vendors] = useState([
+    { id: '1', name: 'Budi', service: 'Tukang Kebun', rating: 4.8, reviewCount: 120, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=BUDI' },
+    { id: '2', name: 'Santi', service: 'House Cleaning', rating: 4.9, reviewCount: 250, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=SANTI' },
+    { id: '3', name: 'Joko', service: 'Tukang Listrik', rating: 4.5, reviewCount: 85, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=JOKO' },
+  ]);
   const [activeTab, setActiveTab] = useState('home');
-  const [vendors, setVendors] = useState([]);
-  const [isAuthReady, setIsAuthReady] = useState(false);
-
-  useEffect(() => {
-    const setupFirebaseAndAuth = async () => {
-      try {
-        if (initialAuthToken) {
-          await signInWithCustomToken(auth, initialAuthToken);
-        } else {
-          await signInAnonymously(auth);
-        }
-        setIsAuthReady(true);
-      } catch (e) {
-        console.error("Firebase Auth Error:", e);
-        setIsAuthReady(true);
-      }
-    };
-    setupFirebaseAndAuth();
-  }, []);
-
-  useEffect(() => {
-    if (!isAuthReady) return;
-
-    // This section is using dummy data for debugging and visualization.
-    const dummyVendors = [
-      { id: '1', name: 'Budi', service: 'Tukang Kebun', rating: 4.8, reviewCount: 120, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=BUDI' },
-      { id: '2', name: 'Santi', service: 'House Cleaning', rating: 4.9, reviewCount: 250, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=SANTI' },
-      { id: '3', name: 'Joko', service: 'Tukang Listrik', rating: 4.5, reviewCount: 85, profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=JOKO' },
-    ];
-    
-    // Simulating data loading delay
-    setTimeout(() => {
-      setVendors(dummyVendors);
-      setLoading(false);
-    }, 1000);
-  }, [isAuthReady]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -101,34 +53,28 @@ const App = () => {
 
               <section>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Vendor Pilihan</h2>
-                {loading ? (
-                  <div className="flex justify-center items-center h-48">
-                    <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-blue-500"></div>
-                  </div>
-                ) : (
-                  vendors.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {vendors.map((vendor) => (
-                        <div key={vendor.id} className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
-                          <img src={vendor.profilePic} alt={vendor.name} className="w-16 h-16 rounded-full object-cover mr-4" />
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{vendor.name}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{vendor.service}</p>
-                            <div className="flex items-center text-yellow-400 text-sm mt-1">
-                              <span>⭐ {vendor.rating}</span>
-                              <span className="text-gray-500 text-xs ml-2">({vendor.reviewCount} ulasan)</span>
-                            </div>
+                {vendors.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {vendors.map((vendor) => (
+                      <div key={vendor.id} className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                        <img src={vendor.profilePic} alt={vendor.name} className="w-16 h-16 rounded-full object-cover mr-4" />
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{vendor.name}</h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{vendor.service}</p>
+                          <div className="flex items-center text-yellow-400 text-sm mt-1">
+                            <span>⭐ {vendor.rating}</span>
+                            <span className="text-gray-500 text-xs ml-2">({vendor.reviewCount} ulasan)</span>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
-                      <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
-                        Belum ada vendor yang terdaftar. Anda bisa tambahkan vendor baru.
-                      </p>
-                    </div>
-                  )
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+                    <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
+                      Belum ada vendor yang terdaftar. Anda bisa tambahkan vendor baru.
+                    </p>
+                  </div>
                 )}
               </section>
             </main>

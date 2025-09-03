@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const App = () => {
-  const [vendors, setVendors] = useState([
+  const [vendors] = useState([
     { id: '1', name: 'Budi', service: 'Tukang Kebun', rating: 4.8, reviewCount: 120, price: 'Rp 60.000/jam', profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=BUDI' },
     { id: '2', name: 'Santi', service: 'House Cleaning', rating: 4.9, reviewCount: 250, price: 'Rp 75.000/jam', profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=SANTI' },
     { id: '3', name: 'Joko', service: 'Tukang Listrik', rating: 4.5, reviewCount: 85, price: 'Rp 80.000/jam', profilePic: 'https://placehold.co/100x100/A0A0A0/FFFFFF?text=JOKO' },
